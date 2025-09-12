@@ -58,8 +58,8 @@ async def health_check():
     )
 
 
-# Import API routers
-from src.api.auth import router as auth_router
+# Import API routers  
+from api.auth_simple import router as auth_router
 
 # Include API routers
 app.include_router(auth_router)

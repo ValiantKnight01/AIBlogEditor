@@ -39,7 +39,7 @@ class ProjectService:
         end_date: Optional[date] = None,
         featured: bool = False,
         tag_ids: Optional[List[int]] = None
-    ) -> Project:
+    ):
         """Create a new project."""
         # Generate unique slug from title
         slug = SlugUtils.create_unique_slug_from_title(
@@ -113,7 +113,7 @@ class ProjectService:
         tag_slug: Optional[str] = None,
         featured_only: bool = False,
         published_only: bool = False
-    ) -> tuple[List[Project], PageInfo]:
+    ):
         """Get paginated list of projects with filtering."""
         query = db.query(Project)
         
@@ -157,7 +157,7 @@ class ProjectService:
         user_id: str,
         update_data: Dict[str, Any],
         is_admin: bool = False
-    ) -> Project:
+    ):
         """Update a project."""
         project = self.get_project_by_id(db, project_id)
         
@@ -250,13 +250,13 @@ class ProjectService:
         db.commit()
         return True
     
-    def publish_project(self, db: Session, project_id: str, user_id: str) -> Project:
+    def publish_project(self, db: Session, project_id: str, user_id: str):
         """Publish a draft project."""
         return self.update_project(
             db, project_id, user_id, {"status": ProjectStatus.PUBLISHED}
         )
     
-    def unpublish_project(self, db: Session, project_id: str, user_id: str) -> Project:
+    def unpublish_project(self, db: Session, project_id: str, user_id: str):
         """Unpublish a published project (revert to draft)."""
         return self.update_project(
             db, project_id, user_id, {"status": ProjectStatus.DRAFT}
@@ -269,7 +269,7 @@ class ProjectService:
         featured: bool, 
         user_id: str,
         is_admin: bool = False
-    ) -> Project:
+    ):
         """Set or unset project as featured."""
         return self.update_project(
             db, project_id, user_id, {"featured": featured}, is_admin
@@ -296,7 +296,7 @@ class ProjectService:
         
         return query.count()
     
-    def get_featured_projects(self, db: Session, limit: int = 6) -> List[Project]:
+    def get_featured_projects(self, db: Session, limit: int = 6):
         """Get featured published projects."""
         return db.query(Project).filter(
             and_(Project.status == ProjectStatus.PUBLISHED, Project.featured == True)
@@ -307,7 +307,7 @@ class ProjectService:
         db: Session, 
         tech: str, 
         limit: int = 10
-    ) -> List[Project]:
+    ):
         """Get projects that use a specific technology."""
         return db.query(Project).filter(
             and_(

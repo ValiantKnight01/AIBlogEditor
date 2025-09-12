@@ -79,7 +79,7 @@ class SearchParams(BaseModel):
 class SortParams(BaseModel):
     """Base sort parameters."""
     sort_by: Optional[str] = Field(None, description="Field to sort by")
-    order: str = Field("desc", regex="^(asc|desc)$", description="Sort order")
+    order: str = Field("desc", pattern="^(asc|desc)$", description="Sort order")
 
 
 class FilterParams(BaseModel):
@@ -131,7 +131,7 @@ class ImportResponse(BaseModel):
 
 class ExportRequest(BaseModel):
     """Data export request."""
-    format: str = Field("json", regex="^(json|csv|xml)$")
+    format: str = Field("json", pattern="^(json|csv|xml)$")
     filters: Optional[Dict[str, Any]] = None
     fields: Optional[List[str]] = None
 

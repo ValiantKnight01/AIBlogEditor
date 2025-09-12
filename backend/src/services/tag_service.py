@@ -33,7 +33,7 @@ class TagService:
         name: str,
         color: Optional[str] = None,
         description: Optional[str] = None
-    ) -> Tag:
+    ):
         """Create a new tag."""
         # Validate and normalize name
         name = name.strip()
@@ -119,7 +119,7 @@ class TagService:
         search: Optional[str] = None,
         sort_by: str = "usage_count",
         order: str = "desc"
-    ) -> tuple[List[Tag], PageInfo]:
+    ):
         """Get paginated list of tags with usage counts."""
         # Build base query with usage counts
         query = db.query(
@@ -184,7 +184,7 @@ class TagService:
         db: Session,
         tag_id: int,
         update_data: Dict[str, Any]
-    ) -> Tag:
+    ):
         """Update a tag."""
         tag = self.get_tag_by_id(db, tag_id)
         
@@ -281,7 +281,7 @@ class TagService:
         
         return query.count()
     
-    def get_popular_tags(self, db: Session, limit: int = 20) -> List[Tag]:
+    def get_popular_tags(self, db: Session, limit: int = 20):
         """Get most popular tags by usage count."""
         query = db.query(
             Tag,
@@ -305,7 +305,7 @@ class TagService:
         
         return tags
     
-    def get_unused_tags(self, db: Session) -> List[Tag]:
+    def get_unused_tags(self, db: Session):
         """Get tags that are not associated with any posts or projects."""
         query = db.query(Tag).outerjoin(
             blog_post_tags, Tag.id == blog_post_tags.c.tag_id

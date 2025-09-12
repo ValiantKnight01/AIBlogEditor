@@ -35,7 +35,7 @@ class BlogPostService:
         featured_image_url: Optional[str] = None,
         meta_description: Optional[str] = None,
         tag_ids: Optional[List[int]] = None
-    ) -> BlogPost:
+    ):
         """Create a new blog post."""
         # Generate unique slug from title
         slug = SlugUtils.create_unique_slug_from_title(
@@ -111,7 +111,7 @@ class BlogPostService:
         search: Optional[str] = None,
         tag_slug: Optional[str] = None,
         published_only: bool = False
-    ) -> tuple[List[BlogPost], PageInfo]:
+    ):
         """Get paginated list of blog posts with filtering."""
         query = db.query(BlogPost)
         
@@ -152,7 +152,7 @@ class BlogPostService:
         user_id: str,
         update_data: Dict[str, Any],
         is_admin: bool = False
-    ) -> BlogPost:
+    ):
         """Update a blog post."""
         post = self.get_post_by_id(db, post_id)
         
@@ -255,13 +255,13 @@ class BlogPostService:
         db.commit()
         return True
     
-    def publish_post(self, db: Session, post_id: str, user_id: str) -> BlogPost:
+    def publish_post(self, db: Session, post_id: str, user_id: str):
         """Publish a draft post."""
         return self.update_post(
             db, post_id, user_id, {"status": PostStatus.PUBLISHED}
         )
     
-    def unpublish_post(self, db: Session, post_id: str, user_id: str) -> BlogPost:
+    def unpublish_post(self, db: Session, post_id: str, user_id: str):
         """Unpublish a published post (revert to draft)."""
         return self.update_post(
             db, post_id, user_id, {"status": PostStatus.DRAFT}
@@ -284,7 +284,7 @@ class BlogPostService:
         
         return query.count()
     
-    def get_featured_posts(self, db: Session, limit: int = 5) -> List[BlogPost]:
+    def get_featured_posts(self, db: Session, limit: int = 5):
         """Get featured published posts."""
         # This is a placeholder implementation
         # You might add a 'featured' boolean field to the BlogPost model
