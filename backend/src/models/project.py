@@ -11,7 +11,7 @@ from sqlalchemy import Column, String, Text, Date, DateTime, ForeignKey, Enum as
 from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlalchemy.orm import relationship
 
-from ..database import Base
+from src.database import Base
 
 
 class ProjectStatus(str, Enum):

@@ -9,9 +9,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 
-from models.user import User
-from services.security_service import security_service
-from database import get_db
+from src.models.user import User
+from src.services.security_service import security_service
+from src.database import get_db
 
 
 class UserService:

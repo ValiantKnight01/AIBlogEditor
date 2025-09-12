@@ -30,7 +30,7 @@ dependencies = [
     "python-multipart>=0.0.6",
     
     # Validation
-    "pydantic>=2.4.0",
+    "pydantic[email]>=2.4.0",
     "pydantic-settings>=2.0.0",
     
     # Utilities

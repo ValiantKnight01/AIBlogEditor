@@ -6,7 +6,7 @@ Handles JWT token creation, validation, and refresh operations.
 import os
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
-import jwt
+from jose import jwt, JWTError
 from passlib.context import CryptContext
 from fastapi import HTTPException, status
 
@@ -70,7 +70,7 @@ class AuthService:
             
             return payload
             
-        except jwt.InvalidTokenError:
+        except JWTError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token"
