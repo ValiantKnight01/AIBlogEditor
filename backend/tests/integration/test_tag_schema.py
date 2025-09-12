@@ -7,6 +7,9 @@ import pytest
 from sqlalchemy import create_engine, MetaData, inspect
 from sqlalchemy.orm import sessionmaker
 
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from src.config import settings
 
 
