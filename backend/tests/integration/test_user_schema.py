@@ -145,8 +145,8 @@ class TestUserSchema:
         assert is_active_default is not None, "is_active should have default value"
         
         # Test timestamp defaults (created_at, updated_at should have server defaults)
-        created_at_default = columns["created_at"].get("server_default")
-        updated_at_default = columns["updated_at"].get("server_default")
-        
+        created_at_default = columns["created_at"].get("default")
+        updated_at_default = columns["updated_at"].get("default")
+
         assert created_at_default is not None, "created_at should have server default"
         assert updated_at_default is not None, "updated_at should have server default"

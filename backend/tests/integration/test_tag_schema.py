@@ -151,7 +151,7 @@ class TestTagSchema:
             assert count_default is not None, f"{count_col} should have default value of 0"
         
         # Test timestamp defaults
-        created_at_default = columns["created_at"].get("server_default")
+        created_at_default = columns["created_at"].get("default")
         assert created_at_default is not None, "created_at should have server default"
 
     @pytest.mark.integration
