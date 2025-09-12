@@ -9,7 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
 import os
-from src.config import Settings
+import sys
+sys.path.append(os.path.dirname(__file__))
+from config import Settings
 
 # Initialize settings
 settings = Settings()
