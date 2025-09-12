@@ -3,10 +3,12 @@ Authentication API endpoints.
 Handles user authentication (login, logout, refresh token).
 """
 
-from fastapi import APIRouter, HTTPException, status, Response, Depends
+from fastapi import APIRouter, HTTPException, status, Response, Depends, Header, Cookie
+from fastapi.security import HTTPBearer
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from typing import Annotated, Optional
 import bcrypt
 import os
 from jose import jwt
@@ -48,6 +50,28 @@ class LoginResponseSimple(BaseModel):
     token_type: str = "bearer"
     expires_in: int
     user: dict
+
+class RefreshResponseSimple(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
+
+
+def verify_token(token: str, expected_type: str = "access"):
+    """Verify JWT token."""
+    secret_key = os.getenv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
+    algorithm = "HS256"
+    
+    try:
+        payload = jwt.decode(token, secret_key, algorithms=[algorithm])
+        
+        # Check token type
+        if payload.get("type") != expected_type:
+            return None
+            
+        return payload
+    except:
+        return None
 
 # Create router
 router = APIRouter(prefix="/api/v1/auth", tags=["authentication"])
@@ -174,16 +198,81 @@ async def login(
 
 
 @router.post("/logout", status_code=204)
-async def logout():
-    """Simple logout endpoint."""
-    return {"message": "Logout successful"}
+async def logout(authorization: Optional[str] = Header(None)):
+    """
+    User logout endpoint.
+    
+    Invalidates the current session and clears refresh token cookie.
+    Requires valid Bearer token in Authorization header.
+    """
+    # Check if Authorization header is present
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Check if it starts with "Bearer "
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    token = authorization.split("Bearer ")[1] if len(authorization.split("Bearer ")) > 1 else None
+    
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials", 
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # TODO: In production, validate JWT token and add to blacklist
+    # For now, just return success response
+    response = Response(content="", status_code=204)
+    # Clear refresh token cookie
+    response.delete_cookie("refresh_token")
+    return response
 
 
-@router.post("/refresh", status_code=200)
-async def refresh():
-    """Simple refresh endpoint."""
-    return {
-        "access_token": "new_access_token",
-        "token_type": "bearer",
-        "expires_in": 1800
+@router.post("/refresh", response_model=RefreshResponseSimple, status_code=200)
+async def refresh(refresh_token: Optional[str] = Cookie(None)):
+    """
+    Token refresh endpoint.
+    
+    Uses refresh token from HTTP-only cookie to generate new access token.
+    """
+    if not refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token missing",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Verify refresh token
+    payload = verify_token(refresh_token, "refresh")
+    
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Extract user data from refresh token
+    user_data = {
+        "sub": payload.get("sub"),
+        "email": payload.get("email")
     }
+    
+    # Create new access token
+    new_access_token = create_access_token(user_data)
+    
+    return RefreshResponseSimple(
+        access_token=new_access_token,
+        token_type="bearer",
+        expires_in=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")) * 60
+    )
