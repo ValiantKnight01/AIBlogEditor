@@ -26,13 +26,14 @@ config.set_main_option("sqlalchemy.url", settings.database.database_url)
 
 # Import all models to ensure they are registered with SQLAlchemy
 # This will be populated as we create models
-# from src.models import user, blog_post, project, tag  # Import all models here
+from src.models import User, BlogPost, Project, Tag, blog_post_tags, project_tags
+from src.database import Base
 
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
