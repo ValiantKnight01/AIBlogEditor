@@ -12,10 +12,14 @@ RUN apk add --no-cache \
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json* ./
+COPY package.json ./
 
-# Install dependencies
-RUN npm ci --only=development
+# Install dependencies (use npm install if no lock file exists)
+RUN if [ -f package-lock.json ]; then \
+        npm ci --include=dev; \
+    else \
+        npm install; \
+    fi
 
 # Copy source code
 COPY . .

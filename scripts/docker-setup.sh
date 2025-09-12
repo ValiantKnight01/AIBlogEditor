@@ -40,11 +40,16 @@ check_docker() {
 
 # Function to check if Docker Compose is available
 check_docker_compose() {
-    if ! command -v docker-compose > /dev/null 2>&1; then
-        print_error "Docker Compose is not installed. Please install Docker Compose and try again."
-        exit 1
+    if ! docker compose version > /dev/null 2>&1; then
+        if ! command -v docker-compose > /dev/null 2>&1; then
+            print_error "Docker Compose is not available. Please install Docker Compose and try again."
+            exit 1
+        fi
+        COMPOSE_CMD="docker-compose"
+    else
+        COMPOSE_CMD="docker compose"
     fi
-    print_success "Docker Compose is available"
+    print_success "Docker Compose is available ($COMPOSE_CMD)"
 }
 
 # Function to setup environment files
@@ -102,18 +107,18 @@ start_services() {
     
     # Build images
     print_status "Building Docker images..."
-    docker-compose build --parallel
+    $COMPOSE_CMD build --parallel
     
     # Start services
     print_status "Starting services..."
-    docker-compose up -d
+    $COMPOSE_CMD up -d
     
     # Wait for services to be ready
     print_status "Waiting for services to be ready..."
     
     # Wait for database
     print_status "Waiting for PostgreSQL to be ready..."
-    timeout 60 bash -c 'until docker-compose exec -T db pg_isready -U blog_user -d blog_db > /dev/null 2>&1; do sleep 2; done'
+    timeout 60 bash -c 'until $COMPOSE_CMD exec -T db pg_isready -U blog_user -d blog_db > /dev/null 2>&1; do sleep 2; done'
     
     if [ $? -eq 0 ]; then
         print_success "PostgreSQL is ready"
@@ -138,7 +143,7 @@ start_services() {
 # Function to show service status
 show_status() {
     print_status "Service status:"
-    docker-compose ps
+    $COMPOSE_CMD ps
     
     echo ""
     print_status "Service URLs:"
@@ -153,7 +158,7 @@ run_migrations() {
     print_status "Running database migrations..."
     
     # Run migrations inside backend container
-    docker-compose exec backend alembic upgrade head
+    $COMPOSE_CMD exec backend alembic upgrade head
     
     if [ $? -eq 0 ]; then
         print_success "Database migrations completed"
@@ -165,14 +170,14 @@ run_migrations() {
 # Function to stop services
 stop_services() {
     print_status "Stopping services..."
-    docker-compose down
+    $COMPOSE_CMD down
     print_success "Services stopped"
 }
 
 # Function to clean up
 cleanup() {
     print_status "Cleaning up containers and volumes..."
-    docker-compose down -v --remove-orphans
+    $COMPOSE_CMD down -v --remove-orphans
     docker system prune -f
     print_success "Cleanup completed"
 }
@@ -181,9 +186,9 @@ cleanup() {
 show_logs() {
     local service=$1
     if [ -z "$service" ]; then
-        docker-compose logs -f
+        $COMPOSE_CMD logs -f
     else
-        docker-compose logs -f "$service"
+        $COMPOSE_CMD logs -f "$service"
     fi
 }
 

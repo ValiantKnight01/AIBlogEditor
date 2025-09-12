@@ -14,9 +14,8 @@ from src.config import settings
 @pytest.fixture
 def db_engine():
     """Create a database engine for testing."""
-    # Use test database URL
-    test_url = settings.database.database_url.replace("blog_db", "blog_db_test")
-    engine = create_engine(test_url)
+    # Use main database for integration tests since Docker environment is isolated
+    engine = create_engine(settings.database.database_url)
     return engine
 
 
