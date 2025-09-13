@@ -7,7 +7,7 @@ from typing import Optional, List
 from datetime import datetime, date
 from enum import Enum
 
-from src.models.project import ProjectStatus
+from models.project import ProjectStatus
 
 
 class ProjectBase(BaseModel):

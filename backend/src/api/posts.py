@@ -5,12 +5,12 @@ Blog Posts API endpoints
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, status, Query
 from sqlalchemy.orm import Session
-from src.database import get_db
-from src.middleware.auth_middleware import get_current_user
-from src.models.user import User
-from src.models.blog_post import BlogPost, PostStatus
-from src.services.blog_service import BlogPostService
-from src.schemas.blog_schemas import (
+from database import get_db
+from middleware.auth_middleware import get_current_user
+from models.user import User
+from models.blog_post import BlogPost, PostStatus
+from services.blog_service import BlogPostService
+from schemas.blog_schemas import (
     BlogPostResponse, 
     BlogPostCreate, 
     BlogPostUpdate,

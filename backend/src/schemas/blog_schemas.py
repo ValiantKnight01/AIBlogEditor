@@ -7,7 +7,7 @@ from typing import Optional, List
 from datetime import datetime
 from enum import Enum
 
-from src.models.blog_post import PostStatus
+from models.blog_post import PostStatus
 
 
 class BlogPostBase(BaseModel):

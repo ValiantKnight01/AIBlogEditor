@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from fastapi import HTTPException, status
-from src.utils.exceptions import AuthErrors, AuthenticationError
+from utils.exceptions import AuthErrors, AuthenticationError
 
 
 class AuthService:

@@ -11,11 +11,11 @@ from sqlalchemy import and_, or_, func, desc
 from fastapi import HTTPException, status
 import re
 
-from src.models.tag import Tag
-from src.models.associations import blog_post_tags, project_tags
-from src.utils.slug_utils import SlugUtils
-from src.utils.pagination import PaginationUtils, PageInfo
-from src.database import get_db
+from models.tag import Tag
+from models.associations import blog_post_tags, project_tags
+from utils.slug_utils import SlugUtils
+from utils.pagination import PaginationUtils, PageInfo
+from database import get_db
 
 
 class TagService:

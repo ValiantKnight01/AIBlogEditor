@@ -7,7 +7,7 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, ForeignKey, Table
 from sqlalchemy.dialects.postgresql import UUID
 
-from src.database import Base
+from database import Base
 
 
 # Blog Post Tags Junction Table

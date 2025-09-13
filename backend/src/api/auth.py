@@ -9,27 +9,27 @@ from sqlalchemy.orm import Session
 from typing import Optional
 
 # Import exceptions
-from src.utils.exceptions import AuthErrors
+from utils.exceptions import AuthErrors
 
 # Lazy imports to avoid circular dependencies
 def get_database_session():
-    from src.database import get_db
+    from database import get_db
     return get_db
 
 def get_auth_service():
-    from src.services.auth_service import AuthService
+    from services.auth_service import AuthService
     return AuthService()
 
 def get_user_service():
-    from src.services.user_service import UserService
+    from services.user_service import UserService
     return UserService()
 
 def get_auth_schemas():
-    from src.schemas.auth_schemas import UserLogin, TokenResponse, LoginResponse
+    from schemas.auth_schemas import UserLogin, TokenResponse, LoginResponse
     return UserLogin, TokenResponse, LoginResponse
 
 def get_user_schemas():
-    from src.schemas.user_schemas import UserResponse
+    from schemas.user_schemas import UserResponse
     return UserResponse
 
 security = HTTPBearer()

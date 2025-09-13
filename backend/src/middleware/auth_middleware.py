@@ -3,16 +3,17 @@ User authentication middleware.
 Handles JWT token validation and user authentication for protected endpoints.
 """
 
+import uuid
 from typing import Optional
 from fastapi import HTTPException, status, Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-from src.database import get_db
-from src.models.user import User
-from src.services.auth_service import auth_service
-from src.utils.exceptions import AuthErrors, AuthenticationError
-from src.utils.security import CustomHTTPBearer
+from database import get_db
+from models.user import User
+from services.auth_service import auth_service
+from utils.exceptions import AuthErrors, AuthenticationError
+from utils.security import CustomHTTPBearer
 
 
 # Security scheme for JWT Bearer tokens
@@ -43,9 +44,15 @@ class AuthMiddleware:
             
             # Verify and decode token
             user_data = self.auth_service.get_user_from_token(token)
-            user_id = user_data.get("user_id")
+            user_id_str = user_data.get("user_id")
             
-            if not user_id:
+            if not user_id_str:
+                return None
+            
+            # Convert string UUID to UUID object
+            try:
+                user_id = uuid.UUID(user_id_str)
+            except (ValueError, TypeError):
                 return None
             
             # Fetch user from database
@@ -82,12 +89,21 @@ class AuthMiddleware:
             
             # Verify and decode token
             user_data = self.auth_service.get_user_from_token(token)
-            user_id = user_data.get("user_id")
+            user_id_str = user_data.get("user_id")
             
-            if not user_id:
+            if not user_id_str:
                 raise AuthenticationError(
                     detail="Invalid token payload",
                     error_code="INVALID_TOKEN_PAYLOAD"
+                )
+            
+            # Convert string UUID to UUID object
+            try:
+                user_id = uuid.UUID(user_id_str)
+            except (ValueError, TypeError):
+                raise AuthenticationError(
+                    detail="Invalid user ID format",
+                    error_code="INVALID_USER_ID_FORMAT"
                 )
             
             # Fetch user from database

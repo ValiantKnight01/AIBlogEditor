@@ -10,13 +10,13 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_, or_, desc
 from fastapi import HTTPException, status
 
-from src.models.project import Project, ProjectStatus
-from src.models.associations import project_tags
-from src.models.tag import Tag
-from src.services.tag_service import TagService
-from src.utils.slug_utils import SlugUtils
-from src.utils.pagination import PaginationUtils, PageInfo
-from src.database import get_db
+from models.project import Project, ProjectStatus
+from models.associations import project_tags
+from models.tag import Tag
+from services.tag_service import TagService
+from utils.slug_utils import SlugUtils
+from utils.pagination import PaginationUtils, PageInfo
+from database import get_db
 
 
 class ProjectService:
