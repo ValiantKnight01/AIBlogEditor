@@ -26,7 +26,7 @@ export class ProjectService {
 
   async getFeaturedProjects(limit = 3): Promise<Project[]> {
     const response = await getFeaturedProjects(limit)
-    return response.projects
+    return response.items
   }
 
   async getProjectBySlug(slug: string): Promise<Project> {
@@ -36,7 +36,7 @@ export class ProjectService {
   async getRelatedProjects(slug: string, limit = 3): Promise<Project[]> {
     try {
       const response = await getRelatedProjects(slug, limit)
-      return response.projects
+      return response.items
     } catch (error) {
       // If related projects endpoint doesn't exist, return empty array
       console.warn('Related projects not available:', error)

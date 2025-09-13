@@ -26,7 +26,7 @@ export class BlogService {
 
   async getRecentPosts(limit = 6): Promise<BlogPost[]> {
     const response = await getRecentPosts(limit)
-    return response.posts
+    return response.items
   }
 
   async getPostBySlug(slug: string): Promise<BlogPost> {
@@ -36,7 +36,7 @@ export class BlogService {
   async getRelatedPosts(slug: string, limit = 3): Promise<BlogPost[]> {
     try {
       const response = await getRelatedPosts(slug, limit)
-      return response.posts
+      return response.items
     } catch (error) {
       // If related posts endpoint doesn't exist, return empty array
       console.warn('Related posts not available:', error)

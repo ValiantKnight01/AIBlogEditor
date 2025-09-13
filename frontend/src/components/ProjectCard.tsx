@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Project } from '@/services/api'
 import { projectService } from '@/services/projects'
-import { Card } from '@/components/ui/Card'
+import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/Badge'
 
 interface ProjectCardProps {

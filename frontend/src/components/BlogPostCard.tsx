@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { BlogPost } from '@/services/api'
 import { blogService } from '@/services/blog'
-import { Card } from '@/components/ui/Card'
+import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/Badge'
 
 interface BlogPostCardProps {

@@ -37,13 +37,13 @@ export interface PaginationParams {
 }
 
 export interface PaginationResponse<T> {
-  [key: string]: T[]
-  pagination: {
-    page: number
-    perPage: number
-    total: number
-    totalPages: number
-  }
+  items: T[]
+  total: number
+  page: number
+  limit: number
+  pages: number
+  has_next: boolean
+  has_prev: boolean
 }
 
 export interface BlogPost {

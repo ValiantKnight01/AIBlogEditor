@@ -24,8 +24,8 @@ export const HomePage: React.FC = () => {
     queryFn: () => getFeaturedProjects(3)
   })
 
-  const recentPosts = recentPostsData?.posts || []
-  const featuredProjects = featuredProjectsData?.projects || []
+  const recentPosts = recentPostsData?.items || []
+  const featuredProjects = featuredProjectsData?.items || []
 
   return (
     <div className="min-h-screen bg-gray-50">
