@@ -32,10 +32,28 @@ async def list_tags(
     Public endpoint - no authentication required.
     Returns all tags or only used tags based on query parameter.
     """
-    # Temporary simple implementation to test endpoint structure
-    # TODO: Replace with full service implementation once enum issue is resolved
+    service = TagService()
     
-    return []  # Return empty list for now
+    try:
+        tags_result = service.get_tags_list(
+            db=db,
+            search=search,
+            page=page,
+            per_page=limit
+        )
+        
+        # Handle tuple return format
+        if isinstance(tags_result, tuple):
+            tags, page_info = tags_result
+        else:
+            tags = tags_result
+        
+        return [TagResponse.model_validate(tag) for tag in tags]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to list tags: {str(e)}"
+        )
 
 
 @router.post("/tags", response_model=TagResponse, status_code=status.HTTP_201_CREATED)

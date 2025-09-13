@@ -53,13 +53,13 @@ class ProjectService:
             description=description,
             tech_stack=tech_stack or [],
             github_url=github_url,
-            live_url=live_url,
+            project_url=live_url,  # Use project_url instead of live_url
             image_url=image_url,
-            author_id=user_id,
+            creator_id=user_id,  # Use creator_id instead of author_id
             status=status,
             start_date=start_date,
-            end_date=end_date,
-            featured=featured
+            end_date=end_date
+            # Note: featured field removed as not in current model
         )
         
         try:
@@ -127,7 +127,8 @@ class ProjectService:
             query = query.filter(Project.author_id == author_id)
         
         if featured_only:
-            query = query.filter(Project.featured == True)
+            # Note: featured field not implemented in current model
+            pass  # query = query.filter(Project.featured == True)
         
         if search:
             search_term = f"%{search}%"
@@ -145,10 +146,22 @@ class ProjectService:
         if tag_slug:
             query = query.join(project_tags).join(Tag).filter(Tag.slug == tag_slug)
         
-        # Order by featured first, then by created date
-        query = query.order_by(desc(Project.featured), desc(Project.created_at))
+        # Order by created date (featured not available in current model)
+        query = query.order_by(desc(Project.created_at))
         
-        return PaginationUtils.create_paginated_response(query, page, per_page)
+        # Get paginated results using the utility
+        items, page_info = PaginationUtils.create_paginated_response(query, page, per_page)
+        
+        # Return in the format expected by the API
+        return {
+            "items": items,
+            "total": page_info.total_items,
+            "page": page_info.current_page,
+            "per_page": page_info.per_page,
+            "total_pages": page_info.total_pages,
+            "has_next": page_info.has_next,
+            "has_prev": page_info.has_prev
+        }
     
     def update_project(
         self,

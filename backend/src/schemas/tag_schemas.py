@@ -142,14 +142,21 @@ class TagUpdate(BaseModel):
 
 class TagResponse(BaseModel):
     """Schema for tag response."""
-    id: int
+    id: str  # Changed from int to str for UUID
     name: str
     slug: str
-    color: str
+    color: Optional[str]  # Made optional to match model
     description: Optional[str]
+    post_count: int = 0  # Added from model
+    project_count: int = 0  # Added from model
     usage_count: int = 0
     created_at: datetime
-    updated_at: datetime
+    # updated_at: datetime  # Not in model
+
+    @validator('id', pre=True)
+    def convert_uuid_to_string(cls, v):
+        """Convert UUID objects to strings."""
+        return str(v) if v is not None else v
 
     class Config:
         from_attributes = True

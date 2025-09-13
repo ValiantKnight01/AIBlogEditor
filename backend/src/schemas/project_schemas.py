@@ -103,17 +103,23 @@ class ProjectResponse(BaseModel):
     description: str
     tech_stack: List[str]
     github_url: Optional[str]
-    live_url: Optional[str]
+    project_url: Optional[str]  # Changed from live_url to project_url
     image_url: Optional[str]
     status: ProjectStatus
     start_date: Optional[date]
     end_date: Optional[date]
-    featured: bool
-    author_id: str
+    # featured: bool  # Removed as not in model
+    creator_id: str  # Changed from author_id to creator_id
     created_at: datetime
     updated_at: datetime
+    published_at: Optional[datetime] = None  # Add missing field from model
     tags: List["TagResponse"] = []
-    author: Optional["UserResponse"] = None
+    creator: Optional["UserResponse"] = None  # Changed from author to creator
+
+    @validator('id', 'creator_id', pre=True)
+    def convert_uuid_to_string(cls, v):
+        """Convert UUID objects to strings."""
+        return str(v) if v is not None else v
 
     class Config:
         from_attributes = True

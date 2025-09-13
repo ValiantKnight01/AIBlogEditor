@@ -25,8 +25,7 @@ async def list_projects(
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(10, ge=1, le=100, description="Number of projects per page"),
     tag: Optional[str] = Query(None, description="Filter by tag slug"),
-    status: Optional[str] = Query(None, description="Filter by status (planning, in_progress, completed, on_hold)"),
-    featured: Optional[bool] = Query(None, description="Filter by featured status"),
+    status_filter: Optional[str] = Query(None, alias="status", description="Filter by status (draft, published)"),
     db: Session = Depends(get_db)
 ):
     """
@@ -35,18 +34,38 @@ async def list_projects(
     Public endpoint - no authentication required.
     Returns all projects for public access.
     """
-    # Temporary simple implementation to test endpoint structure  
-    # TODO: Replace with full service implementation once enum issue is resolved
+    service = ProjectService()
     
-    return ProjectListResponse(
-        items=[],  # Changed from "projects" to "items"
-        total=0,
-        page=page,
-        limit=limit,  # Changed from "per_page" to "limit"
-        pages=0,  # Changed from "total_pages" to "pages"
-        has_next=False,
-        has_prev=False
-    )
+    try:
+        # For public access, only show published projects unless status filter is specified
+        published_only = status_filter != "draft"
+        project_status = ProjectStatus(status_filter) if status_filter and status_filter in ["draft", "published"] else None
+        
+        result = service.get_projects_list(
+            db=db,
+            page=page,
+            per_page=limit,
+            tag_slug=tag,
+            status=project_status,
+            published_only=published_only
+        )
+        
+        projects = [ProjectResponse.model_validate(project) for project in result["items"]]
+        
+        return ProjectListResponse(
+            items=projects,
+            total=result["total"],
+            page=page,
+            limit=limit,
+            pages=result["total_pages"],
+            has_next=result["has_next"],
+            has_prev=result["has_prev"]
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to list projects: {str(e)}"
+        )
 
 
 @router.post("/projects", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
