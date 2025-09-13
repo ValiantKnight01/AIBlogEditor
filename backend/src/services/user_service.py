@@ -9,11 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 
-# Lazy import to avoid circular dependencies
-def get_user_model():
-    from src.models.user import User
-    return User
-
+from src.models.user import User
 from src.services.security_service import security_service
 from src.database import get_db
 
@@ -34,7 +30,6 @@ class UserService:
         bio: Optional[str] = None
     ):
         """Create a new user account."""
-        User = get_user_model()
         
         # Validate password strength
         self.security_service.validate_password_for_registration(password)
@@ -90,12 +85,10 @@ class UserService:
     
     def get_user_by_email(self, db: Session, email: str):
         """Get user by email address."""
-        User = get_user_model()
         return db.query(User).filter(User.email == email.lower()).first()
     
     def get_user_by_username(self, db: Session, username: str):
         """Get user by username."""
-        User = get_user_model()
         return db.query(User).filter(User.username == username).first()
     
     def authenticate_user(self, db: Session, email: str, password: str):

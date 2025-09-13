@@ -11,7 +11,7 @@ from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from database import Base
+from src.database import Base
 
 
 class Tag(Base):

@@ -10,12 +10,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_, or_, desc
 from fastapi import HTTPException, status
 
-from models.blog_post import BlogPost, PostStatus
-from models.associations import blog_post_tags
-from models.tag import Tag
-from utils.slug_utils import SlugUtils
-from utils.pagination import PaginationUtils, PageInfo
-from database import get_db
+from src.models.blog_post import BlogPost, PostStatus
+from src.models.associations import blog_post_tags
+from src.models.tag import Tag
+from src.utils.slug_utils import SlugUtils
+from src.utils.pagination import PaginationUtils, PageInfo
+from src.database import get_db
 
 
 class BlogPostService:
