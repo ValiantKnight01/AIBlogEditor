@@ -25,7 +25,7 @@ async def list_posts(
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(10, ge=1, le=100, description="Number of posts per page"),
     tag: Optional[str] = Query(None, description="Filter by tag slug"),
-    status: Optional[str] = Query(None, description="Filter by status (draft, published)"),
+    status_filter: Optional[str] = Query(None, alias="status", description="Filter by status (draft, published)"),
     db: Session = Depends(get_db)
 ):
     """
@@ -34,18 +34,38 @@ async def list_posts(
     Public endpoint - no authentication required.
     Returns published posts for public, all posts for authenticated users.
     """
-    # Temporary simple implementation to test endpoint structure
-    # TODO: Replace with full service implementation once enum issue is resolved
+    service = BlogPostService()
     
-    return BlogPostListResponse(
-        items=[],  # Changed from "posts" to "items"
-        total=0,
-        page=page,
-        limit=limit,  # Changed from "per_page" to "limit" 
-        pages=0,  # Changed from "total_pages" to "pages"
-        has_next=False,
-        has_prev=False
-    )
+    try:
+        # For public access, only show published posts unless status filter is specified
+        published_only = status_filter != "draft"
+        post_status = PostStatus(status_filter) if status_filter and status_filter in ["draft", "published"] else None
+        
+        result = service.get_posts_list(
+            db=db,
+            page=page,
+            per_page=limit,
+            tag_slug=tag,
+            status=post_status,
+            published_only=published_only
+        )
+        
+        posts = [BlogPostResponse.model_validate(post) for post in result["items"]]
+        
+        return BlogPostListResponse(
+            items=posts,
+            total=result["total"],
+            page=page,
+            limit=limit,
+            pages=result["total_pages"],
+            has_next=result["has_next"],
+            has_prev=result["has_prev"]
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to list posts: {str(e)}"
+        )
 
 
 @router.post("/posts", response_model=BlogPostResponse, status_code=status.HTTP_201_CREATED)

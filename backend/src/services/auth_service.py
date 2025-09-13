@@ -117,7 +117,7 @@ class AuthService:
         payload = self.verify_token(token, "access")
         
         return {
-            "user_id": payload.get("user_id"),
+            "user_id": payload.get("sub") or payload.get("user_id"),  # Support both 'sub' and 'user_id' fields
             "email": payload.get("email"),
             "sub": payload.get("sub")
         }
