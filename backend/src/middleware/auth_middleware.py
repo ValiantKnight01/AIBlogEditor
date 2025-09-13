@@ -8,11 +8,11 @@ from fastapi import HTTPException, status, Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-from database import get_db
-from models.user import User
-from services.auth_service import auth_service
-from utils.exceptions import AuthErrors, AuthenticationError
-from utils.security import CustomHTTPBearer
+from src.database import get_db
+from src.models.user import User
+from src.services.auth_service import auth_service
+from src.utils.exceptions import AuthErrors, AuthenticationError
+from src.utils.security import CustomHTTPBearer
 
 
 # Security scheme for JWT Bearer tokens

@@ -5,12 +5,12 @@ Tags API endpoints
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, status, Query
 from sqlalchemy.orm import Session
-from database import get_db
-from middleware.auth_middleware import get_current_user
-from models.user import User
-from models.tag import Tag
-from services.tag_service import TagService
-from schemas.tag_schemas import (
+from src.database import get_db
+from src.middleware.auth_middleware import get_current_user
+from src.models.user import User
+from src.models.tag import Tag
+from src.services.tag_service import TagService
+from src.schemas.tag_schemas import (
     TagResponse, 
     TagCreate,
     TagUpdate

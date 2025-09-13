@@ -5,12 +5,12 @@ Projects API endpoints
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, status, Query
 from sqlalchemy.orm import Session
-from database import get_db
-from middleware.auth_middleware import get_current_user
-from models.user import User
-from models.project import Project, ProjectStatus
-from services.project_service import ProjectService
-from schemas.project_schemas import (
+from src.database import get_db
+from src.middleware.auth_middleware import get_current_user
+from src.models.user import User
+from src.models.project import Project, ProjectStatus
+from src.services.project_service import ProjectService
+from src.schemas.project_schemas import (
     ProjectResponse, 
     ProjectCreate, 
     ProjectUpdate,

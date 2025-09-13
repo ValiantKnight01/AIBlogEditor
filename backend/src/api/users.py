@@ -8,10 +8,10 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from pydantic import BaseModel
 
-from database import get_db
-from models.user import User
-from middleware.auth_middleware import get_current_user
-from schemas.user_schemas import UserResponse
+from src.database import get_db
+from src.models.user import User
+from src.middleware.auth_middleware import get_current_user
+from src.schemas.user_schemas import UserResponse
 
 # Initialize router
 router = APIRouter(prefix="/api/v1/users", tags=["users"])

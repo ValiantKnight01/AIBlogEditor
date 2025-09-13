@@ -7,9 +7,9 @@ import asyncio
 # Add backend src to path for imports
 sys.path.insert(0, '/app/src')
 
-from database import get_db
-from models.user_models import User
-from services.user_service import UserService
+from src.database import get_db
+from src.models.user import User
+from src.services.user_service import UserService
 
 def create_test_user():
     """Create a test user for contract tests."""

@@ -32,8 +32,29 @@ def create_test_data():
         project_service = ProjectService()
         blog_service = BlogPostService()
         
-        # Get or create test user (should already exist)
+        # Get admin credentials from environment variables
+        admin_email = os.getenv('ADMIN_EMAIL', 'admin@example.com')
+        admin_password = os.getenv('ADMIN_PASSWORD', 'AdminP@ss_w0rd!')
+        admin_username = os.getenv('ADMIN_USERNAME', 'admin')
+        admin_full_name = os.getenv('ADMIN_FULL_NAME', 'Admin User')
+        
+        # Get or create admin user
         user_service = UserService()
+        admin_user = user_service.get_user_by_email(db, admin_email)
+        if not admin_user:
+            admin_user = user_service.create_user(
+                db=db,
+                email=admin_email,
+                username=admin_username,
+                password=admin_password,
+                full_name=admin_full_name,
+                bio="Administrator user"
+            )
+            print(f"Created admin user: {admin_user.email}")
+        else:
+            print(f"Using existing admin user: {admin_user.email}")
+        
+        # Keep backwards compatibility - also create test user if it doesn't exist
         test_user = user_service.get_user_by_email(db, "test@example.com")
         if not test_user:
             test_user = user_service.create_user(
@@ -47,6 +68,9 @@ def create_test_data():
             print(f"Created test user: {test_user.email}")
         else:
             print(f"Using existing test user: {test_user.email}")
+        
+        # Use admin user as the main user for creating content
+        main_user = admin_user
         
         # Create test tags
         tags = []
@@ -115,7 +139,7 @@ def create_test_data():
                 
                 project = project_service.create_project(
                     db=db,
-                    user_id=test_user.id,
+                    user_id=main_user.id,
                     title=project_info["title"],
                     description=project_info["description"],
                     tech_stack=project_info["tech_stack"],
@@ -157,7 +181,7 @@ def create_test_data():
                 
                 blog_post = blog_service.create_post(
                     db=db,
-                    user_id=test_user.id,
+                    user_id=main_user.id,
                     title=blog_info["title"],
                     content=blog_info["content"],
                     excerpt=blog_info["excerpt"],
