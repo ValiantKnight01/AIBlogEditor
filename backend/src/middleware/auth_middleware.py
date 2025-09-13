@@ -5,16 +5,18 @@ Handles JWT token validation and user authentication for protected endpoints.
 
 from typing import Optional
 from fastapi import HTTPException, status, Depends, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from database import get_db
 from models.user import User
 from services.auth_service import auth_service
+from utils.exceptions import AuthErrors, AuthenticationError
+from utils.security import CustomHTTPBearer
 
 
 # Security scheme for JWT Bearer tokens
-security = HTTPBearer()
+security = CustomHTTPBearer()
 
 
 class AuthMiddleware:
@@ -72,11 +74,7 @@ class AuthMiddleware:
         Used for protected endpoints that require authentication.
         """
         if not credentials:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Authentication required",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise AuthErrors.MISSING_TOKEN
         
         try:
             # Extract token from Bearer scheme
@@ -87,38 +85,41 @@ class AuthMiddleware:
             user_id = user_data.get("user_id")
             
             if not user_id:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
+                raise AuthenticationError(
                     detail="Invalid token payload",
-                    headers={"WWW-Authenticate": "Bearer"},
+                    error_code="INVALID_TOKEN_PAYLOAD"
                 )
             
             # Fetch user from database
             user = db.query(User).filter(User.id == user_id).first()
             if not user:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="User not found",
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
+                raise AuthErrors.USER_NOT_FOUND
             
             # Check if user account is active
             if not user.is_active:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Account deactivated",
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
+                raise AuthErrors.ACCOUNT_DEACTIVATED
             
             return user
             
-        except HTTPException:
+        except AuthenticationError:
             raise
+        except HTTPException as e:
+            # Handle auth service HTTPExceptions and convert them
+            if e.status_code == 401:
+                if "expired" in e.detail.lower():
+                    raise AuthErrors.EXPIRED_TOKEN
+                elif "invalid" in e.detail.lower():
+                    raise AuthErrors.INVALID_TOKEN
+                else:
+                    raise AuthenticationError(
+                        detail=e.detail,
+                        error_code="AUTHENTICATION_FAILED"
+                    )
+            raise e
         except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+            raise AuthenticationError(
                 detail="Token validation failed",
-                headers={"WWW-Authenticate": "Bearer"},
+                error_code="TOKEN_VALIDATION_FAILED"
             )
     
     async def get_current_admin_user(

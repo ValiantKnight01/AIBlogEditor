@@ -7,11 +7,13 @@ This is the main FastAPI application entry point.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.requests import Request
 import uvicorn
 import os
 import sys
 sys.path.append(os.path.dirname(__file__))
 from config import Settings
+from utils.exceptions import APIException, api_exception_handler
 
 # Initialize settings
 settings = Settings()
@@ -33,6 +35,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add custom exception handler for API errors
+app.add_exception_handler(APIException, api_exception_handler)
 
 
 @app.get("/")

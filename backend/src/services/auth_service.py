@@ -9,6 +9,7 @@ from typing import Dict, Any, Optional
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from fastapi import HTTPException, status
+from utils.exceptions import AuthErrors, AuthenticationError
 
 
 class AuthService:
@@ -49,32 +50,23 @@ class AuthService:
             
             # Check token type
             if payload.get("type") != expected_type:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid token type"
-                )
+                raise AuthErrors.INVALID_TOKEN_TYPE
             
             # Check expiration
             exp = payload.get("exp")
             if exp is None:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Token missing expiration"
+                raise AuthenticationError(
+                    detail="Token missing expiration",
+                    error_code="MISSING_EXPIRATION"
                 )
                 
             if datetime.fromtimestamp(exp) < datetime.utcnow():
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Token expired"
-                )
+                raise AuthErrors.EXPIRED_TOKEN
             
             return payload
             
         except JWTError:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token"
-            )
+            raise AuthErrors.INVALID_TOKEN
     
     def refresh_access_token(self, refresh_token: str) -> Dict[str, str]:
         """Generate new access token using refresh token."""
