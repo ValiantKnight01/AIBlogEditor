@@ -8,6 +8,9 @@ from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 from typing import Optional
 
+# Import exceptions
+from src.utils.exceptions import AuthErrors
+
 # Lazy imports to avoid circular dependencies
 def get_database_session():
     from src.database import get_db
@@ -70,11 +73,7 @@ async def login(
     )
     
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise AuthErrors.INVALID_CREDENTIALS
     
     # Create tokens
     access_token = auth_service.create_access_token(

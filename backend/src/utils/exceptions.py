@@ -117,6 +117,11 @@ class AuthErrors:
         detail="Invalid refresh token",
         error_code="INVALID_REFRESH_TOKEN"
     )
+    
+    INVALID_CREDENTIALS = AuthenticationError(
+        detail="Incorrect email or password",
+        error_code="INVALID_CREDENTIALS"
+    )
 
 
 def create_error_response(status_code: int, detail: str, error_code: str) -> JSONResponse:
