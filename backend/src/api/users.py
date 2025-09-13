@@ -8,6 +8,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from typing import Optional
+from pydantic import BaseModel
 import sys
 import os
 
@@ -89,7 +90,29 @@ def get_current_user_simple(
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
 
-@router.get("/me")
+# Request/Response models
+class UserUpdateRequest(BaseModel):
+    """Request model for updating user profile."""
+    full_name: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+
+
+class UserResponse(BaseModel):
+    """Response model for user profile."""
+    id: str
+    email: str
+    username: str
+    full_name: Optional[str]
+    bio: Optional[str]
+    avatar_url: Optional[str]
+    is_active: bool
+    is_admin: bool
+    created_at: Optional[str]
+    updated_at: Optional[str]
+
+
+@router.get("/me", response_model=UserResponse)
 async def get_current_user(
     current_user = Depends(get_current_user_simple),
     db: Session = Depends(get_db)
@@ -99,52 +122,49 @@ async def get_current_user(
     
     Returns the authenticated user's profile data without sensitive information.
     """
-    return {
-        "id": str(current_user.id),
-        "email": current_user.email,
-        "username": current_user.username,
-        "full_name": current_user.full_name,
-        "bio": current_user.bio,
-        "avatar_url": current_user.avatar_url,
-        "is_active": current_user.is_active,
-        "is_admin": current_user.is_admin,
-        "created_at": current_user.created_at.isoformat() if current_user.created_at else None,
-        "updated_at": current_user.updated_at.isoformat() if current_user.updated_at else None
-    }
+    return UserResponse(
+        id=str(current_user.id),
+        email=current_user.email,
+        username=current_user.username,
+        full_name=current_user.full_name,
+        bio=current_user.bio,
+        avatar_url=current_user.avatar_url,
+        is_active=current_user.is_active,
+        is_admin=current_user.is_admin,
+        created_at=current_user.created_at.isoformat() if current_user.created_at else None,
+        updated_at=current_user.updated_at.isoformat() if current_user.updated_at else None
+    )
 
 
-@router.put("/me")
+@router.put("/me", response_model=UserResponse)
 async def update_current_user(
-    user_update: dict,
+    user_update: UserUpdateRequest,
     current_user = Depends(get_current_user_simple),
     db: Session = Depends(get_db)
 ):
     """
     Update current user profile information.
     
-    Allows updating of profile fields like full_name, bio, social links, etc.
+    Allows updating of profile fields like full_name, bio, avatar_url.
     Email and username updates are not allowed through this endpoint.
     """
-    # Allowed fields that can be updated
-    updatable_fields = ["full_name", "bio", "avatar_url"]
-    
-    # Filter update data to only allowed fields
-    update_data = {k: v for k, v in user_update.items() if k in updatable_fields}
+    # Convert Pydantic model to dict, excluding None values
+    update_data = {k: v for k, v in user_update.dict().items() if v is not None}
     
     if not update_data:
         # Return current user if no valid updates provided
-        return {
-            "id": str(current_user.id),
-            "email": current_user.email,
-            "username": current_user.username,
-            "full_name": current_user.full_name,
-            "bio": current_user.bio,
-            "avatar_url": current_user.avatar_url,
-            "is_active": current_user.is_active,
-            "is_admin": current_user.is_admin,
-            "created_at": current_user.created_at.isoformat() if current_user.created_at else None,
-            "updated_at": current_user.updated_at.isoformat() if current_user.updated_at else None
-        }
+        return UserResponse(
+            id=str(current_user.id),
+            email=current_user.email,
+            username=current_user.username,
+            full_name=current_user.full_name,
+            bio=current_user.bio,
+            avatar_url=current_user.avatar_url,
+            is_active=current_user.is_active,
+            is_admin=current_user.is_admin,
+            created_at=current_user.created_at.isoformat() if current_user.created_at else None,
+            updated_at=current_user.updated_at.isoformat() if current_user.updated_at else None
+        )
     
     # Build update SQL
     set_clauses = []
@@ -172,15 +192,15 @@ async def update_current_user(
         FROM users WHERE id = :user_id
     """), {"user_id": current_user.id}).fetchone()
     
-    return {
-        "id": str(updated_user.id),
-        "email": updated_user.email,
-        "username": updated_user.username,
-        "full_name": updated_user.full_name,
-        "bio": updated_user.bio,
-        "avatar_url": updated_user.avatar_url,
-        "is_active": updated_user.is_active,
-        "is_admin": updated_user.is_admin,
-        "created_at": updated_user.created_at.isoformat() if updated_user.created_at else None,
-        "updated_at": updated_user.updated_at.isoformat() if updated_user.updated_at else None
-    }
+    return UserResponse(
+        id=str(updated_user.id),
+        email=updated_user.email,
+        username=updated_user.username,
+        full_name=updated_user.full_name,
+        bio=updated_user.bio,
+        avatar_url=updated_user.avatar_url,
+        is_active=updated_user.is_active,
+        is_admin=updated_user.is_admin,
+        created_at=updated_user.created_at.isoformat() if updated_user.created_at else None,
+        updated_at=updated_user.updated_at.isoformat() if updated_user.updated_at else None
+    )
