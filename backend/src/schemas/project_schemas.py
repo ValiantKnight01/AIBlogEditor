@@ -7,7 +7,7 @@ from typing import Optional, List
 from datetime import datetime, date
 from enum import Enum
 
-from models.project import ProjectStatus
+from src.models.project import ProjectStatus
 
 
 class ProjectBase(BaseModel):
@@ -110,7 +110,7 @@ class ProjectResponse(BaseModel):
     status: ProjectStatus
     start_date: Optional[date]
     end_date: Optional[date]
-    # featured: bool  # Removed as not in model
+    featured: bool  # Re-added as now in model
     creator_id: str  # Changed from author_id to creator_id
     created_at: datetime
     updated_at: datetime

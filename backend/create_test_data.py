@@ -110,7 +110,6 @@ def create_test_data():
                 "github_url": "https://github.com/testuser/awesome-project",
                 "live_url": "https://awesome-project.example.com",
                 "status": "published",
-                "featured": True,
                 "start_date": date(2024, 1, 1),
                 "end_date": date(2024, 6, 1)
             },
@@ -121,7 +120,6 @@ def create_test_data():
                 "github_url": "https://github.com/testuser/blog-platform",
                 "live_url": "https://blog-platform.example.com",
                 "status": "published",
-                "featured": False,
                 "start_date": date(2024, 3, 1),
                 "end_date": date(2024, 12, 1)
             }
@@ -146,7 +144,6 @@ def create_test_data():
                     github_url=project_info["github_url"],
                     live_url=project_info["live_url"],
                     status=project_info["status"],
-                    featured=project_info["featured"],
                     start_date=project_info["start_date"],
                     end_date=project_info["end_date"],
                     tag_ids=tag_ids
@@ -160,17 +157,15 @@ def create_test_data():
         blog_data = [
             {
                 "title": "Getting Started with FastAPI",
-                "content": "This is a comprehensive guide to getting started with FastAPI...",
+                "content": "This is a comprehensive guide to getting started with FastAPI. FastAPI is a modern, fast (high-performance), web framework for building APIs with Python 3.7+ based on standard Python type hints. It provides automatic interactive API documentation, data validation, serialization, and much more out of the box.",
                 "excerpt": "Learn how to build modern web APIs with FastAPI",
-                "status": "published",
-                "featured": True
+                "status": "published"
             },
             {
                 "title": "Building React Components",
-                "content": "In this post, we'll explore how to build reusable React components...",
+                "content": "In this post, we'll explore how to build reusable React components. React components are the building blocks of any React application. They allow you to split the UI into independent, reusable pieces, and think about each piece in isolation. We'll cover functional components, props, state management, and best practices for component composition.",
                 "excerpt": "Master the art of component-driven development",
-                "status": "published",
-                "featured": False
+                "status": "published"
             }
         ]
         
@@ -186,7 +181,6 @@ def create_test_data():
                     content=blog_info["content"],
                     excerpt=blog_info["excerpt"],
                     status=blog_info["status"],
-                    featured=blog_info["featured"],
                     tag_ids=tag_ids
                 )
                 print(f"Created blog post: {blog_post.title} (slug: {blog_post.slug})")

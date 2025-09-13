@@ -7,7 +7,7 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from enum import Enum
 
-from sqlalchemy import Column, String, Text, Date, DateTime, ForeignKey, Enum as SQLEnum
+from sqlalchemy import Column, String, Text, Date, DateTime, ForeignKey, Enum as SQLEnum, Boolean
 from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlalchemy.orm import relationship
 
@@ -51,6 +51,7 @@ class Project(Base):
     tech_stack = Column(JSON, nullable=True)  # Array of technology names
     start_date = Column(Date, nullable=True)
     end_date = Column(Date, nullable=True)
+    featured = Column(Boolean, default=False, nullable=False, server_default="false")  # Add featured flag
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

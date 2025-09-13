@@ -58,8 +58,8 @@ class ProjectService:
             creator_id=user_id,  # Use creator_id instead of author_id
             status=status,
             start_date=start_date,
-            end_date=end_date
-            # Note: featured field removed as not in current model
+            end_date=end_date,
+            featured=featured  # Now included since it's in the model
         )
         
         try:
@@ -127,8 +127,7 @@ class ProjectService:
             query = query.filter(Project.author_id == author_id)
         
         if featured_only:
-            # Note: featured field not implemented in current model
-            pass  # query = query.filter(Project.featured == True)
+            query = query.filter(Project.featured == True)
         
         if search:
             search_term = f"%{search}%"
@@ -146,8 +145,8 @@ class ProjectService:
         if tag_slug:
             query = query.join(project_tags).join(Tag).filter(Tag.slug == tag_slug)
         
-        # Order by created date (featured not available in current model)
-        query = query.order_by(desc(Project.created_at))
+        # Order by featured first, then created date
+        query = query.order_by(desc(Project.featured), desc(Project.created_at))
         
         # Get paginated results using the utility
         items, page_info = PaginationUtils.create_paginated_response(query, page, per_page)
