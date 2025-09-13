@@ -35,7 +35,7 @@ class BlogPost(Base):
     excerpt = Column(String(300), nullable=True)
     
     # Status and publication  
-    status = Column(SQLEnum(PostStatus, name='poststatus', create_constraint=True), default=PostStatus.DRAFT, nullable=False, index=True)
+    status = Column(String(20), default='draft', nullable=False, index=True)
     published_at = Column(DateTime, nullable=True)
     
     # Author relationship

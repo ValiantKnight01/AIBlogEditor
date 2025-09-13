@@ -57,6 +57,11 @@ class BlogPostResponse(BaseModel):
     class Config:
         from_attributes = True
 
+    @validator('id', 'author_id', pre=True)
+    def convert_uuid_to_string(cls, v):
+        """Convert UUID to string."""
+        return str(v) if v else v
+
     @validator('read_time_minutes', always=True)
     def calculate_read_time(cls, v, values):
         """Calculate estimated read time based on content."""

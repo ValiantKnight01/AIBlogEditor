@@ -2,7 +2,7 @@
 User-related Pydantic schemas.
 """
 
-from pydantic import BaseModel, EmailStr, Field, HttpUrl
+from pydantic import BaseModel, EmailStr, Field, HttpUrl, validator
 from typing import Optional
 from datetime import datetime
 
@@ -43,11 +43,7 @@ class UserResponse(BaseModel):
     username: str
     full_name: Optional[str]
     bio: Optional[str]
-    website_url: Optional[str]
-    github_url: Optional[str]
-    twitter_url: Optional[str]
-    linkedin_url: Optional[str]
-    location: Optional[str]
+    avatar_url: Optional[str]
     is_active: bool
     is_admin: bool
     created_at: datetime
@@ -55,6 +51,11 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+    
+    @validator('id', pre=True)
+    def convert_uuid_to_string(cls, v):
+        """Convert UUID to string."""
+        return str(v) if v else v
 
 
 class UserListResponse(BaseModel):

@@ -35,7 +35,7 @@ class Project(Base):
     short_description = Column(String(200), nullable=True)
     
     # Status and publication
-    status = Column(SQLEnum(ProjectStatus), default=ProjectStatus.DRAFT, nullable=False, index=True)
+    status = Column(String(20), default='draft', nullable=False, index=True)
     published_at = Column(DateTime, nullable=True)
     
     # Creator relationship

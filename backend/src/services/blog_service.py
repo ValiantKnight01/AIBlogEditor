@@ -49,6 +49,12 @@ class BlogPostService:
             if len(content) > 200:
                 excerpt += "..."
         
+        # Ensure status is a proper string value for database
+        if isinstance(status, PostStatus):
+            status_value = status.value
+        else:
+            status_value = str(status).lower()
+        
         # Create blog post
         post = BlogPost(
             title=title.strip(),
@@ -56,7 +62,7 @@ class BlogPostService:
             content=content,
             excerpt=excerpt,
             author_id=user_id,
-            status=status,
+            status=status_value,
             featured_image_url=featured_image_url,
             meta_description=meta_description,
             published_at=datetime.utcnow() if status == PostStatus.PUBLISHED else None
