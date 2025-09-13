@@ -25,7 +25,7 @@ def create_test_user():
             db=db,
             email="test@example.com",
             username="testuser",
-            password="testpassword123",
+            password="SecureP@ssw0rd!",
             full_name="Test User",
             bio="A test user for development"
         )

@@ -10,7 +10,7 @@ import json
 # Mock data for testing
 valid_login_data = {
     "email": "test@example.com",
-    "password": "TestP@ss_w0rd!"
+    "password": "SecureP@ssw0rd!"
 }
 
 invalid_login_data = {
