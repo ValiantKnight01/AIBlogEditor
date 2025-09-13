@@ -8,18 +8,21 @@ sys.path.append('/app/src')
 sys.path.append('/app')
 
 from sqlalchemy.orm import Session
-from src.database import get_db
+from datetime import datetime, date
+
+# Import database connection
+from src.database import SessionLocal
+
+# Import services
 from src.services.user_service import UserService
 from src.services.tag_service import TagService
 from src.services.project_service import ProjectService
 from src.services.blog_service import BlogPostService
-from datetime import datetime, date
 
 def create_test_data():
     """Create test data."""
     # Get database session
-    db_gen = get_db()
-    db = next(db_gen)
+    db = SessionLocal()
     
     try:
         print("Creating test data...")

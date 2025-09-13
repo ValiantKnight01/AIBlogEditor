@@ -101,9 +101,11 @@ class ProjectResponse(BaseModel):
     title: str
     slug: str
     description: str
+    content: Optional[str] = None  # Alias for description for contract compatibility
     tech_stack: List[str]
     github_url: Optional[str]
     project_url: Optional[str]  # Changed from live_url to project_url
+    demo_url: Optional[str] = None  # Alias for project_url for contract compatibility
     image_url: Optional[str]
     status: ProjectStatus
     start_date: Optional[date]
@@ -115,11 +117,28 @@ class ProjectResponse(BaseModel):
     published_at: Optional[datetime] = None  # Add missing field from model
     tags: List["TagResponse"] = []
     creator: Optional["UserResponse"] = None  # Changed from author to creator
+    author: Optional["UserResponse"] = None  # Alias for creator for contract compatibility
 
     @validator('id', 'creator_id', pre=True)
     def convert_uuid_to_string(cls, v):
         """Convert UUID objects to strings."""
         return str(v) if v is not None else v
+
+    def __init__(self, **data):
+        """Initialize with aliases for contract compatibility."""
+        # Set content as alias for description
+        if 'description' in data and 'content' not in data:
+            data['content'] = data['description']
+        
+        # Set demo_url as alias for project_url
+        if 'project_url' in data and 'demo_url' not in data:
+            data['demo_url'] = data['project_url']
+            
+        # Set author as alias for creator
+        if 'creator' in data and 'author' not in data:
+            data['author'] = data['creator']
+            
+        super().__init__(**data)
 
     class Config:
         from_attributes = True
