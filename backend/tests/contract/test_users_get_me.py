@@ -19,7 +19,7 @@ class TestUsersGetMeContract:
                 "/api/v1/auth/login",
                 json={
                     "email": "test@example.com",
-                    "password": "TestP@ss_w0rd!"
+                    "password": "SecureP@ssw0rd!"
                 }
             )
             

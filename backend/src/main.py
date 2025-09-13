@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
+from fastapi import HTTPException
 import uvicorn
 import os
 import sys
@@ -38,6 +39,19 @@ app.add_middleware(
 
 # Add custom exception handler for API errors
 app.add_exception_handler(APIException, api_exception_handler)
+
+# Add fallback handler for generic HTTPException to ensure error_code field
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc: HTTPException):
+    """Fallback handler for HTTPException to ensure error_code field."""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "detail": exc.detail,
+            "error_code": "HTTP_EXCEPTION"  # Generic error code for unhandled HTTPExceptions
+        },
+        headers=getattr(exc, 'headers', None)
+    )
 
 
 @app.get("/")

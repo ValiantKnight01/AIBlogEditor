@@ -90,7 +90,7 @@ class AuthErrors:
     
     INVALID_TOKEN = AuthenticationError(
         detail="Could not validate credentials",
-        error_code="INVALID_CREDENTIALS"
+        error_code="INVALID_TOKEN"
     )
     
     EXPIRED_TOKEN = AuthenticationError(
