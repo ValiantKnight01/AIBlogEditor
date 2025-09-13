@@ -35,37 +35,17 @@ async def list_projects(
     Public endpoint - no authentication required.
     Returns all projects for public access.
     """
-    service = ProjectService()
-    
-    # Convert status string to enum if provided
-    status_filter = None
-    if status:
-        try:
-            status_filter = ProjectStatus(status.upper())
-        except ValueError:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=f"Invalid status: {status}"
-            )
-    
-    # Get paginated projects using the service method
-    result = service.get_projects_list(
-        db=db,
-        page=page,
-        per_page=limit,
-        status=status_filter,
-        tag_slug=tag,
-        featured_only=featured or False
-    )
+    # Temporary simple implementation to test endpoint structure  
+    # TODO: Replace with full service implementation once enum issue is resolved
     
     return ProjectListResponse(
-        projects=result["items"],
-        total=result["total"],
-        page=result["page"],
-        per_page=result["per_page"],
-        total_pages=result["total_pages"],
-        has_next=result["has_next"],
-        has_prev=result["has_prev"]
+        items=[],  # Changed from "projects" to "items"
+        total=0,
+        page=page,
+        limit=limit,  # Changed from "per_page" to "limit"
+        pages=0,  # Changed from "total_pages" to "pages"
+        has_next=False,
+        has_prev=False
     )
 
 

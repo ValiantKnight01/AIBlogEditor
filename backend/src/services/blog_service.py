@@ -117,9 +117,9 @@ class BlogPostService:
         
         # Apply filters
         if published_only or status == PostStatus.PUBLISHED:
-            query = query.filter(BlogPost.status == 'published')
+            query = query.filter(BlogPost.status == PostStatus.PUBLISHED)
         elif status:
-            query = query.filter(BlogPost.status == status.value if status else status)
+            query = query.filter(BlogPost.status == status)
         
         if author_id:
             query = query.filter(BlogPost.author_id == author_id)
@@ -143,22 +143,18 @@ class BlogPostService:
         else:
             query = query.order_by(desc(BlogPost.created_at))
         
-        # Manual pagination to avoid enum issues  
-        offset = (page - 1) * per_page
-        items = query.offset(offset).limit(per_page).all()
+        # Get paginated results using the utility
+        items, page_info = PaginationUtils.create_paginated_response(query, page, per_page)
         
-        # For now, let's return a simplified response without total count to avoid the enum issue
-        # TODO: Fix enum handling to get accurate total count
-        has_more = len(items) == per_page
-        
+        # Return in the format expected by the API
         return {
             "items": items,
-            "total": len(items),  # Simplified - not accurate but works
-            "page": page,
-            "per_page": per_page,
-            "total_pages": page if not has_more else page + 1,  # Simplified
-            "has_next": has_more,
-            "has_prev": page > 1
+            "total": page_info.total_items,
+            "page": page_info.current_page,
+            "per_page": page_info.per_page,
+            "total_pages": page_info.total_pages,
+            "has_next": page_info.has_next,
+            "has_prev": page_info.has_prev
         }
     
     def update_post(
@@ -305,7 +301,7 @@ class BlogPostService:
         # This is a placeholder implementation
         # You might add a 'featured' boolean field to the BlogPost model
         return db.query(BlogPost).filter(
-            BlogPost.status == 'published'
+            BlogPost.status == PostStatus.PUBLISHED
         ).order_by(desc(BlogPost.published_at)).limit(limit).all()
     
     def _check_slug_exists(self, db: Session, slug: str) -> bool:

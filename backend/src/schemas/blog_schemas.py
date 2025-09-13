@@ -87,11 +87,11 @@ class BlogPostSummary(BaseModel):
 
 class BlogPostListResponse(BaseModel):
     """Schema for paginated blog post list response."""
-    posts: List[BlogPostSummary]
+    items: List[BlogPostSummary]  # Changed from "posts" to "items"  
     total: int
     page: int
-    per_page: int
-    total_pages: int
+    limit: int  # Changed from "per_page" to "limit"
+    pages: int  # Changed from "total_pages" to "pages" 
     has_next: bool
     has_prev: bool
 

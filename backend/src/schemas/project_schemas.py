@@ -140,11 +140,11 @@ class ProjectSummary(BaseModel):
 
 class ProjectListResponse(BaseModel):
     """Schema for paginated project list response."""
-    projects: List[ProjectSummary]
+    items: List[ProjectSummary]  # Changed from "projects" to "items"
     total: int
     page: int
-    per_page: int
-    total_pages: int
+    limit: int  # Changed from "per_page" to "limit"
+    pages: int  # Changed from "total_pages" to "pages"
     has_next: bool
     has_prev: bool
 
