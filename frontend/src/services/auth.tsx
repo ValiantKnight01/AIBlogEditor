@@ -14,8 +14,8 @@ export interface RegisterCredentials {
 }
 
 export interface AuthResponse {
-  accessToken: string
-  refreshToken: string
+  access_token: string
+  refresh_token: string
   user: User
 }
 
@@ -59,9 +59,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await apiLogin(credentials.email, credentials.password)
       
-      // Store tokens
-      localStorage.setItem('accessToken', response.accessToken)
-      localStorage.setItem('refreshToken', response.refreshToken)
+      // Store tokens (API returns access_token, refresh_token)
+      localStorage.setItem('accessToken', response.access_token)
+      localStorage.setItem('refreshToken', response.refresh_token)
       
       // Update state
       setUser(response.user)
@@ -133,9 +133,9 @@ class AuthService {
     try {
       const response = await apiLogin(credentials.email, credentials.password)
       
-      // Store tokens
-      localStorage.setItem('accessToken', response.accessToken)
-      localStorage.setItem('refreshToken', response.refreshToken)
+      // Store tokens (API returns access_token, refresh_token)
+      localStorage.setItem('accessToken', response.access_token)
+      localStorage.setItem('refreshToken', response.refresh_token)
       
       // Store user
       this.user = response.user

@@ -230,6 +230,11 @@ export const getTags = async (): Promise<PaginationResponse<Tag>> => {
   return response.data
 }
 
+export const createTag = async (data: Partial<Tag>): Promise<Tag> => {
+  const response = await api.post('/tags', data)
+  return response.data
+}
+
 // Dashboard API functions
 export const getDashboardStats = async () => {
   const response = await api.get('/dashboard/stats')

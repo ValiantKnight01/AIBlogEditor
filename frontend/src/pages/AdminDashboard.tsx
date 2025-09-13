@@ -20,11 +20,16 @@ import {
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
+import { BlogPostForm } from '@/components/BlogPostForm'
+import { ProjectForm } from '@/components/ProjectForm'
+import { TagForm } from '@/components/TagForm'
 
 type TabType = 'overview' | 'posts' | 'projects' | 'tags' | 'settings'
+type ModalType = 'blog-post' | 'project' | 'tag' | null
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('overview')
+  const [openModal, setOpenModal] = useState<ModalType>(null)
 
   // Fetch user profile
   const { data: user } = useQuery({
@@ -217,7 +222,7 @@ export const AdminDashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Blog Posts</h2>
-        <Button>
+        <Button onClick={() => setOpenModal('blog-post')}>
           <Plus className="h-4 w-4 mr-2" />
           New Post
         </Button>
@@ -231,7 +236,7 @@ export const AdminDashboard: React.FC = () => {
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No posts yet</h3>
             <p className="text-gray-500 mb-6">Get started by creating your first blog post.</p>
-            <Button>Create your first post</Button>
+            <Button onClick={() => setOpenModal('blog-post')}>Create your first post</Button>
           </CardContent>
         </Card>
       ) : (
@@ -293,7 +298,7 @@ export const AdminDashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Projects</h2>
-        <Button>
+        <Button onClick={() => setOpenModal('project')}>
           <Plus className="h-4 w-4 mr-2" />
           New Project
         </Button>
@@ -307,7 +312,7 @@ export const AdminDashboard: React.FC = () => {
             <FolderOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No projects yet</h3>
             <p className="text-gray-500 mb-6">Showcase your work by adding your first project.</p>
-            <Button>Add your first project</Button>
+            <Button onClick={() => setOpenModal('project')}>Add your first project</Button>
           </CardContent>
         </Card>
       ) : (
@@ -358,7 +363,7 @@ export const AdminDashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Tags</h2>
-        <Button>
+        <Button onClick={() => setOpenModal('tag')}>
           <Plus className="h-4 w-4 mr-2" />
           New Tag
         </Button>
@@ -372,7 +377,7 @@ export const AdminDashboard: React.FC = () => {
             <Tags className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No tags yet</h3>
             <p className="text-gray-500 mb-6">Organize your content with tags.</p>
-            <Button>Create your first tag</Button>
+            <Button onClick={() => setOpenModal('tag')}>Create your first tag</Button>
           </CardContent>
         </Card>
       ) : (
@@ -496,6 +501,28 @@ export const AdminDashboard: React.FC = () => {
         {/* Tab Content */}
         {renderTabContent()}
       </div>
+
+      {/* Modals */}
+      {openModal === 'blog-post' && (
+        <BlogPostForm 
+          onClose={() => setOpenModal(null)}
+          onSuccess={() => setOpenModal(null)}
+        />
+      )}
+      
+      {openModal === 'project' && (
+        <ProjectForm 
+          onClose={() => setOpenModal(null)}
+          onSuccess={() => setOpenModal(null)}
+        />
+      )}
+      
+      {openModal === 'tag' && (
+        <TagForm 
+          onClose={() => setOpenModal(null)}
+          onSuccess={() => setOpenModal(null)}
+        />
+      )}
     </div>
   )
 }
