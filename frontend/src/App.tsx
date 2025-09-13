@@ -2,6 +2,7 @@ import React from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/services/auth'
 import { Navigation } from '@/components/Navigation'
+import { ThemeProvider } from '@/components/ThemeProvider'
 import { HomePage } from '@/pages/HomePage'
 import { BlogPostPage } from '@/pages/BlogPostPage'
 import { ProjectPage } from '@/pages/ProjectPage'
@@ -230,40 +231,42 @@ export const App: React.FC = () => {
   const { user, logout } = useAuth()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation user={user} onLogout={logout} />
-      
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/blog" element={<BlogListPage />} />
-        <Route path="/blog/:slug" element={<BlogPostPage />} />
-        <Route path="/projects" element={<ProjectListPage />} />
-        <Route path="/projects/:slug" element={<ProjectPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
+    <ThemeProvider defaultTheme="system">
+      <div className="min-h-screen bg-background text-foreground">
+        <Navigation user={user} onLogout={logout} />
         
-        {/* Protected Routes */}
-        <Route 
-          path="/admin" 
-          element={
-            <ProtectedRoute requireAuth={true}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/admin/*" 
-          element={
-            <ProtectedRoute requireAuth={true}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } 
-        />
-        
-        {/* Fallback Route */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </div>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/blog" element={<BlogListPage />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
+          <Route path="/projects" element={<ProjectListPage />} />
+          <Route path="/projects/:slug" element={<ProjectPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          
+          {/* Protected Routes */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute requireAuth={true}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/*" 
+            element={
+              <ProtectedRoute requireAuth={true}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Fallback Route */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </div>
+    </ThemeProvider>
   )
 }
