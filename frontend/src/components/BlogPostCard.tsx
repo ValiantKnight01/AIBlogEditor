@@ -60,12 +60,12 @@ export const BlogPostCard: React.FC<BlogPostCardProps> = ({
           <div className="flex flex-wrap gap-2">
             {post.tags.map((tag) => (
               <Link
-                key={tag}
-                to={`/tags/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                key={typeof tag === 'string' ? tag : tag.id}
+                to={`/tags/${typeof tag === 'string' ? tag.toLowerCase().replace(/\s+/g, '-') : tag.slug}`}
                 className="inline-block"
               >
                 <Badge variant="secondary" className="px-2 py-1 bg-secondary text-secondary-foreground rounded-md text-xs hover:bg-secondary/80 transition-colors">
-                  {tag}
+                  {typeof tag === 'string' ? tag : tag.name}
                 </Badge>
               </Link>
             ))}
