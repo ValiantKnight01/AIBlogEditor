@@ -59,12 +59,13 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ onClose, onSuccess }) 
   const handleSubmit = async (data: ProjectFormData) => {
     try {
       await createProjectMutation.mutateAsync({
-        name: data.name,
+        title: data.name,
         description: data.description,
-        projectUrl: data.projectUrl || undefined,
-        githubUrl: data.githubUrl || undefined,
+        github_url: data.githubUrl || undefined,
+        live_url: data.projectUrl || undefined,
         status: data.status,
-        tagNames: data.tags,
+        tech_stack: [],  // We can add tech stack to the form later
+        tag_names: data.tags,
       })
     } catch (error) {
       // Error handling done in mutation

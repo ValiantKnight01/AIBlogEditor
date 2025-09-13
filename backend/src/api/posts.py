@@ -91,7 +91,8 @@ async def create_post(
             status=post_data.status,
             featured_image_url=str(post_data.featured_image_url) if post_data.featured_image_url else None,
             meta_description=post_data.meta_description,
-            tag_ids=post_data.tag_ids
+            tag_ids=post_data.tag_ids,
+            tag_names=post_data.tag_names
         )
         return BlogPostResponse.model_validate(post)
     except ValueError as e:

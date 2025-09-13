@@ -357,6 +357,65 @@ class TagService:
         
         return True
     
+    def get_or_create_tags_by_names(self, db: Session, tag_names: List[str]) -> List[int]:
+        """
+        Get or create tags by their names and return list of tag IDs.
+        This method will create missing tags automatically.
+        """
+        if not tag_names:
+            return []
+        
+        tag_ids = []
+        
+        for name in tag_names:
+            name = name.strip()
+            if not name:
+                continue
+                
+            # Check if tag exists (case insensitive)
+            existing_tag = db.query(Tag).filter(
+                func.lower(Tag.name) == name.lower()
+            ).first()
+            
+            if existing_tag:
+                tag_ids.append(existing_tag.id)
+            else:
+                # Create new tag
+                try:
+                    new_tag = self.create_tag(db, name)
+                    tag_ids.append(new_tag.id)
+                except HTTPException:
+                    # If creation fails (e.g., validation error), skip this tag
+                    continue
+        
+        return tag_ids
+    
+    def resolve_tag_ids(self, db: Session, tag_ids: Optional[List[int]] = None, tag_names: Optional[List[str]] = None) -> List[int]:
+        """
+        Resolve a combined list of tag IDs from both direct IDs and tag names.
+        This method combines existing tag_ids with IDs from tag_names (creating tags as needed).
+        """
+        combined_ids = []
+        
+        # Add direct tag IDs
+        if tag_ids:
+            combined_ids.extend(tag_ids)
+        
+        # Add tag IDs from names (creating tags as needed)
+        if tag_names:
+            name_based_ids = self.get_or_create_tags_by_names(db, tag_names)
+            combined_ids.extend(name_based_ids)
+        
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_ids = []
+        for tag_id in combined_ids:
+            if tag_id not in seen:
+                seen.add(tag_id)
+                unique_ids.append(tag_id)
+        
+        return unique_ids
+    
     def _validate_and_normalize_color(self, color: str) -> str:
         """Validate and normalize a hex color."""
         if not color:

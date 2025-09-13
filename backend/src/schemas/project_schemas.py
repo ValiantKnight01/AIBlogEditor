@@ -51,6 +51,7 @@ class ProjectBase(BaseModel):
 class ProjectCreate(ProjectBase):
     """Schema for creating a new project."""
     tag_ids: Optional[List[int]] = Field(default_factory=list, description="List of tag IDs")
+    tag_names: Optional[List[str]] = Field(default_factory=list, description="List of tag names (will auto-create if not exists)")
 
 
 class ProjectUpdate(BaseModel):
@@ -66,6 +67,7 @@ class ProjectUpdate(BaseModel):
     end_date: Optional[date] = Field(None, description="Project end date")
     featured: Optional[bool] = Field(None, description="Whether project is featured")
     tag_ids: Optional[List[int]] = Field(None, description="List of tag IDs")
+    tag_names: Optional[List[str]] = Field(None, description="List of tag names (will auto-create if not exists)")
 
     @validator('end_date')
     def validate_end_date(cls, v, values):

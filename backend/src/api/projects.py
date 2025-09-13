@@ -95,7 +95,8 @@ async def create_project(
             start_date=project_data.start_date,
             end_date=project_data.end_date,
             featured=project_data.featured,
-            tag_ids=project_data.tag_ids
+            tag_ids=project_data.tag_ids,
+            tag_names=project_data.tag_names
         )
         return ProjectResponse.model_validate(project)
     except ValueError as e:

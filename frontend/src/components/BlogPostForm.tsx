@@ -61,7 +61,7 @@ export const BlogPostForm: React.FC<BlogPostFormProps> = ({ onClose, onSuccess }
         content: data.content,
         excerpt: data.excerpt || '',
         status: data.status,
-        tagNames: data.tags,
+        tag_names: data.tags,
       })
     } catch (error) {
       // Error handling done in mutation

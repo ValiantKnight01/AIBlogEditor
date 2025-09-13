@@ -13,6 +13,7 @@ from fastapi import HTTPException, status
 from src.models.project import Project, ProjectStatus
 from src.models.associations import project_tags
 from src.models.tag import Tag
+from src.services.tag_service import TagService
 from src.utils.slug_utils import SlugUtils
 from src.utils.pagination import PaginationUtils, PageInfo
 from src.database import get_db
@@ -22,7 +23,7 @@ class ProjectService:
     """Service for project management operations."""
     
     def __init__(self):
-        pass
+        self.tag_service = TagService()
     
     def create_project(
         self,
@@ -38,7 +39,8 @@ class ProjectService:
         start_date: Optional[date] = None,
         end_date: Optional[date] = None,
         featured: bool = False,
-        tag_ids: Optional[List[int]] = None
+        tag_ids: Optional[List[int]] = None,
+        tag_names: Optional[List[str]] = None
     ):
         """Create a new project."""
         # Generate unique slug from title
@@ -66,9 +68,10 @@ class ProjectService:
             db.add(project)
             db.flush()  # Get the project ID
             
-            # Add tags if provided
-            if tag_ids:
-                self._add_tags_to_project(db, project.id, tag_ids)
+            # Resolve and add tags if provided
+            resolved_tag_ids = self.tag_service.resolve_tag_ids(db, tag_ids, tag_names)
+            if resolved_tag_ids:
+                self._add_tags_to_project(db, project.id, resolved_tag_ids)
             
             db.commit()
             db.refresh(project)

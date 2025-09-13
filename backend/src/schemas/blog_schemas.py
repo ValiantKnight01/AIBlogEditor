@@ -23,6 +23,7 @@ class BlogPostBase(BaseModel):
 class BlogPostCreate(BlogPostBase):
     """Schema for creating a new blog post."""
     tag_ids: Optional[List[int]] = Field(default_factory=list, description="List of tag IDs")
+    tag_names: Optional[List[str]] = Field(default_factory=list, description="List of tag names (will auto-create if not exists)")
 
 
 class BlogPostUpdate(BaseModel):
@@ -34,6 +35,7 @@ class BlogPostUpdate(BaseModel):
     meta_description: Optional[str] = Field(None, max_length=160, description="SEO meta description")
     status: Optional[PostStatus] = Field(None, description="Post publication status")
     tag_ids: Optional[List[int]] = Field(None, description="List of tag IDs")
+    tag_names: Optional[List[str]] = Field(None, description="List of tag names (will auto-create if not exists)")
 
 
 class BlogPostResponse(BaseModel):

@@ -13,6 +13,7 @@ from fastapi import HTTPException, status
 from src.models.blog_post import BlogPost, PostStatus
 from src.models.associations import blog_post_tags
 from src.models.tag import Tag
+from src.services.tag_service import TagService
 from src.utils.slug_utils import SlugUtils
 from src.utils.pagination import PaginationUtils, PageInfo
 from src.database import get_db
@@ -22,7 +23,7 @@ class BlogPostService:
     """Service for blog post management operations."""
     
     def __init__(self):
-        pass
+        self.tag_service = TagService()
     
     def create_post(
         self,
@@ -34,7 +35,8 @@ class BlogPostService:
         status: PostStatus = PostStatus.DRAFT,
         featured_image_url: Optional[str] = None,
         meta_description: Optional[str] = None,
-        tag_ids: Optional[List[int]] = None
+        tag_ids: Optional[List[int]] = None,
+        tag_names: Optional[List[str]] = None
     ):
         """Create a new blog post."""
         # Generate unique slug from title
@@ -72,9 +74,10 @@ class BlogPostService:
             db.add(post)
             db.flush()  # Get the post ID
             
-            # Add tags if provided
-            if tag_ids:
-                self._add_tags_to_post(db, post.id, tag_ids)
+            # Resolve and add tags if provided
+            resolved_tag_ids = self.tag_service.resolve_tag_ids(db, tag_ids, tag_names)
+            if resolved_tag_ids:
+                self._add_tags_to_post(db, post.id, resolved_tag_ids)
             
             db.commit()
             db.refresh(post)
