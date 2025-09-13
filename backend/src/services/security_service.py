@@ -5,6 +5,7 @@ Provides secure password hashing and verification functionality.
 
 import secrets
 import re
+import os
 from typing import Optional, Dict, Any
 from passlib.context import CryptContext
 from fastapi import HTTPException, status
@@ -15,7 +16,14 @@ class SecurityService:
     
     def __init__(self):
         # Password hashing context with bcrypt
-        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        # Use fewer rounds in development for better performance
+        # Default: 12 rounds (~300ms), development: 4 rounds (~10ms)
+        bcrypt_rounds = int(os.getenv("BCRYPT_ROUNDS", "4"))  # Default to 4 for development
+        self.pwd_context = CryptContext(
+            schemes=["bcrypt"], 
+            deprecated="auto",
+            bcrypt__rounds=bcrypt_rounds
+        )
         
         # Password strength requirements
         self.min_password_length = 8

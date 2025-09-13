@@ -22,8 +22,13 @@ class AuthService:
         self.access_token_expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
         self.refresh_token_expire_days = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
         
-        # Password hashing
-        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        # Password hashing - optimized for performance in development
+        bcrypt_rounds = int(os.getenv("BCRYPT_ROUNDS", "4"))  # Default to 4 for development
+        self.pwd_context = CryptContext(
+            schemes=["bcrypt"], 
+            deprecated="auto",
+            bcrypt__rounds=bcrypt_rounds
+        )
     
     def create_access_token(self, data: Dict[str, Any]) -> str:
         """Create a JWT access token."""
