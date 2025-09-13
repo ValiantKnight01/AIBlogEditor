@@ -18,6 +18,7 @@ class Tag(Base):
     """Tag entity for categorizing blog posts and projects."""
     
     __tablename__ = "tags"
+    __table_args__ = {'extend_existing': True}
 
     # Primary key
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)

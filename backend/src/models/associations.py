@@ -28,7 +28,8 @@ blog_post_tags = Table(
         primary_key=True,
         index=True
     ),
-    Column("created_at", DateTime, default=datetime.utcnow, nullable=False)
+    Column("created_at", DateTime, default=datetime.utcnow, nullable=False),
+    extend_existing=True
 )
 
 
@@ -50,5 +51,6 @@ project_tags = Table(
         primary_key=True,
         index=True
     ),
-    Column("created_at", DateTime, default=datetime.utcnow, nullable=False)
+    Column("created_at", DateTime, default=datetime.utcnow, nullable=False),
+    extend_existing=True
 )
