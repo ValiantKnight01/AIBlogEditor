@@ -60,9 +60,11 @@ async def health_check():
 
 # Import API routers  
 from api.auth_simple import router as auth_router
+from api.users import router as users_router
 
 # Include API routers
 app.include_router(auth_router)
+app.include_router(users_router)
 
 
 if __name__ == "__main__":

@@ -13,12 +13,24 @@ class TestUsersGetMeContract:
     @pytest.mark.contract
     async def test_get_current_user_success_contract(self):
         """Test getting current user profile with valid token."""
-        valid_token = "Bearer valid-access-token"
-        
         async with AsyncClient(base_url="http://localhost:8000") as client:
+            # First, login to get a valid token
+            login_response = await client.post(
+                "/api/v1/auth/login",
+                json={
+                    "email": "test@example.com",
+                    "password": "TestP@ss_w0rd!"
+                }
+            )
+            
+            assert login_response.status_code == 200
+            login_data = login_response.json()
+            access_token = login_data["access_token"]
+            
+            # Now test the users/me endpoint with the valid token
             response = await client.get(
                 "/api/v1/users/me",
-                headers={"Authorization": valid_token}
+                headers={"Authorization": f"Bearer {access_token}"}
             )
         
         # Should return 200 OK
