@@ -7,6 +7,7 @@ import { HomePage } from '@/pages/HomePage'
 import { BlogPostPage } from '@/pages/BlogPostPage'
 import { ProjectPage } from '@/pages/ProjectPage'
 import { AdminDashboard } from '@/pages/AdminDashboard'
+import { LoginPage } from '@/pages/LoginPage'
 
 // Protected Route wrapper
 interface ProtectedRouteProps {
@@ -244,6 +245,7 @@ export const App: React.FC = () => {
           <Route path="/projects/:slug" element={<ProjectPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/login" element={<LoginPage />} />
           
           {/* Protected Routes */}
           <Route 
