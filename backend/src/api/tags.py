@@ -12,7 +12,8 @@ from models.tag import Tag
 from services.tag_service import TagService
 from schemas.tag_schemas import (
     TagResponse, 
-    TagCreate
+    TagCreate,
+    TagUpdate
 )
 
 router = APIRouter(prefix="/api/v1", tags=["Tags"])
@@ -91,4 +92,240 @@ async def create_tag(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create tag: {str(e)}"
+        )
+
+
+@router.get("/tags/{slug}", response_model=TagResponse)
+async def get_tag(
+    slug: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Get a specific tag by slug.
+    
+    Public endpoint - no authentication required.
+    """
+    service = TagService()
+    
+    try:
+        tag = service.get_tag_by_slug(db=db, slug=slug)
+        if not tag:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        return TagResponse.model_validate(tag)
+    except Exception as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get tag: {str(e)}"
+        )
+
+
+@router.put("/tags/{slug}", response_model=TagResponse)
+async def update_tag(
+    slug: str,
+    tag_data: TagUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update a tag by slug.
+    
+    Requires authentication. Only authenticated users can update tags.
+    """
+    service = TagService()
+    
+    try:
+        tag = service.update_tag(
+            db=db,
+            slug=slug,
+            **tag_data.model_dump(exclude_unset=True)
+        )
+        if not tag:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        return TagResponse.model_validate(tag)
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        if "duplicate" in str(e).lower() or "already exists" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A tag with this name already exists"
+            )
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update tag: {str(e)}"
+        )
+
+
+@router.delete("/tags/{slug}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_tag(
+    slug: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Delete a tag by slug.
+    
+    Requires authentication. Only authenticated users can delete tags.
+    """
+    service = TagService()
+    
+    try:
+        success = service.delete_tag(db=db, slug=slug)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        return None  # 204 No Content
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete tag: {str(e)}"
+        )
+
+
+@router.get("/tags/{slug}", response_model=TagResponse)
+async def get_tag(
+    slug: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Get a specific tag by slug.
+    
+    Public endpoint - no authentication required.
+    """
+    service = TagService()
+    
+    try:
+        tag = service.get_tag_by_slug(db=db, slug=slug)
+        if not tag:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        return TagResponse.model_validate(tag)
+    except Exception as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get tag: {str(e)}"
+        )
+
+
+@router.put("/tags/{slug}", response_model=TagResponse)
+async def update_tag(
+    slug: str,
+    tag_data: TagUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update a tag by slug.
+    
+    Requires authentication. Only authenticated users can update tags.
+    """
+    service = TagService()
+    
+    try:
+        tag = service.update_tag(
+            db=db,
+            slug=slug,
+            **tag_data.model_dump(exclude_unset=True)
+        )
+        if not tag:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        return TagResponse.model_validate(tag)
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        if "duplicate" in str(e).lower() or "already exists" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A tag with this name already exists"
+            )
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update tag: {str(e)}"
+        )
+
+
+@router.delete("/tags/{slug}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_tag(
+    slug: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Delete a tag by slug.
+    
+    Requires authentication. Only authenticated users can delete tags.
+    """
+    service = TagService()
+    
+    try:
+        success = service.delete_tag(db=db, slug=slug)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        return None  # 204 No Content
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tag not found"
+            )
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete tag: {str(e)}"
         )
