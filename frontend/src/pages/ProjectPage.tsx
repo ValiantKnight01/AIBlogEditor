@@ -3,8 +3,8 @@ import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, Calendar, ExternalLink, Github, Eye, User } from 'lucide-react'
 import { getProjectBySlug } from '@/services/api'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 
 export const ProjectPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>()

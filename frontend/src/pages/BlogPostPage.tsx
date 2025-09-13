@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, Calendar, Eye, User } from 'lucide-react'
 import { getPostBySlug } from '@/services/api'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/ui/Badge'
 
 export const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>()
