@@ -203,26 +203,23 @@ async def login(
         user_row = result.fetchone()
         
         if not user_row:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+            raise AuthenticationError(
                 detail="Incorrect email or password",
-                headers={"WWW-Authenticate": "Bearer"},
+                error_code="INVALID_CREDENTIALS"
             )
         
         # Check if user is active
         if not user_row.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+            raise AuthenticationError(
                 detail="Account is inactive",
-                headers={"WWW-Authenticate": "Bearer"},
+                error_code="ACCOUNT_INACTIVE"
             )
         
         # Verify password
         if not verify_password(user_credentials.password, user_row.password_hash):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+            raise AuthenticationError(
                 detail="Incorrect email or password",
-                headers={"WWW-Authenticate": "Bearer"},
+                error_code="INVALID_CREDENTIALS"
             )
         
         # Create tokens
@@ -264,7 +261,11 @@ async def login(
             }
         )
         
+    except AuthenticationError:
+        # Re-raise authentication errors
+        raise
     except HTTPException:
+        # Re-raise HTTP exceptions
         raise
     except Exception as e:
         print(f"Login error: {e}")  # For debugging

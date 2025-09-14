@@ -54,6 +54,45 @@ async def http_exception_handler(request, exc: HTTPException):
     )
 
 
+# Add custom handler for Pydantic validation errors
+from fastapi.exceptions import RequestValidationError
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc: RequestValidationError):
+    """Transform Pydantic validation errors to match contract expectations."""
+    errors = []
+    for error in exc.errors():
+        # Transform Pydantic error format to expected format
+        field_name = error['loc'][-1] if error['loc'] else None
+        error_type = error['type']
+        error_msg = error['msg']
+        
+        # Map common Pydantic error types to expected types
+        if error_type == "missing":
+            mapped_type = "missing"
+        elif error_type == "value_error" and "email" in error_msg.lower():
+            mapped_type = "invalid_email"
+        elif error_type == "value_error":
+            mapped_type = "invalid_format"
+        else:
+            mapped_type = error_type
+            
+        transformed_error = {
+            "field": field_name,
+            "type": mapped_type,
+            "msg": error_msg
+        }
+        errors.append(transformed_error)
+    
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": errors,
+            "error_code": "VALIDATION_ERROR"
+        }
+    )
+
+
 @app.get("/")
 async def root():
     """Root endpoint that returns basic API information."""
