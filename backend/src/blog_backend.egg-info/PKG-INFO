@@ -1,0 +1,79 @@
+Metadata-Version: 2.4
+Name: blog-backend
+Version: 0.1.0
+Summary: Personal blog backend with FastAPI
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.104.0
+Requires-Dist: uvicorn[standard]>=0.24.0
+Requires-Dist: sqlalchemy>=2.0.0
+Requires-Dist: alembic>=1.12.0
+Requires-Dist: psycopg2-binary>=2.9.0
+Requires-Dist: python-jose[cryptography]>=3.3.0
+Requires-Dist: passlib[bcrypt]>=1.7.4
+Requires-Dist: python-multipart>=0.0.6
+Requires-Dist: pydantic>=2.4.0
+Requires-Dist: pydantic-settings>=2.0.0
+Requires-Dist: python-slugify>=8.0.0
+Requires-Dist: structlog>=23.1.0
+Requires-Dist: python-dotenv>=1.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: httpx>=0.25.0; extra == "dev"
+Requires-Dist: black>=23.7.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+
+# Personal Blog Backend
+
+Backend API for personal blog platform built with FastAPI.
+
+## Setup
+
+```bash
+# Install dependencies
+pip install -e ".[dev]"
+
+# Run database migrations
+alembic upgrade head
+
+# Start development server
+uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+## Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run specific test types
+pytest -m unit
+pytest -m integration
+pytest -m contract
+pytest -m e2e
+
+# Run with coverage
+pytest --cov=src --cov-report=html
+```
+
+## Development
+
+```bash
+# Format code
+black src tests
+isort src tests
+
+# Lint code
+flake8 src tests
+mypy src
+
+# Run all checks
+black src tests && isort src tests && flake8 src tests && mypy src
+```
