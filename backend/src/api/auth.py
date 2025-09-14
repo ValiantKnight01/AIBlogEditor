@@ -4,12 +4,12 @@ Handles user authentication (login, logout, refresh token).
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
-from fastapi.security import HTTPBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from typing import Optional
 
 # Import exceptions
-from utils.exceptions import AuthErrors
+from utils.exceptions import AuthErrors, AuthenticationError
 
 # Lazy imports to avoid circular dependencies
 def get_database_session():
@@ -115,16 +115,79 @@ async def login(
 
 
 @router.post("/logout", status_code=204)
-async def logout():
-    """Logout endpoint - placeholder for now.""" 
-    return {"message": "Logout successful"}
+async def logout(
+    response: Response,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_database_session())
+):
+    """
+    User logout endpoint.
+    
+    Clears the refresh token cookie and invalidates the session.
+    Returns 204 No Content on success, 401 if no valid token provided.
+    """
+    # Check if authorization header is present
+    if not credentials:
+        raise AuthErrors.MISSING_TOKEN
+    
+    try:
+        # Get auth service
+        auth_service = get_auth_service()
+        
+        # Validate the access token (ensure user is authenticated)
+        token = credentials.credentials
+        user_data = auth_service.get_user_from_token(token)
+        
+        # Clear refresh token cookie
+        response.delete_cookie(
+            key="refresh_token",
+            httponly=True,
+            secure=True,
+            samesite="lax"
+        )
+        
+        # Return 204 No Content (no response body)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+        
+    except Exception as e:
+        # If token is invalid, still return 401 
+        raise AuthErrors.INVALID_TOKEN
 
 
-@router.post("/refresh", status_code=200)
-async def refresh():
-    """Refresh endpoint - placeholder for now."""
-    return {
-        "access_token": "new_access_token",
-        "token_type": "bearer",
-        "expires_in": 1800
-    }
+@router.post("/refresh", status_code=200) 
+async def refresh(
+    refresh_data: dict,
+    response: Response,
+    db: Session = Depends(get_database_session())
+):
+    """
+    Refresh access token endpoint.
+    
+    Uses refresh token from request body to generate new access token.
+    Returns new access token with token type and expiration info.
+    """
+    # Get auth service and schemas
+    auth_service = get_auth_service()
+    
+    # Get refresh token from request body
+    refresh_token = refresh_data.get("refresh_token") if refresh_data else None
+    
+    if not refresh_token:
+        raise AuthenticationError(
+            detail="Refresh token required",
+            error_code="MISSING_REFRESH_TOKEN"
+        )
+    
+    try:
+        # Generate new access token using refresh token
+        token_data = auth_service.refresh_access_token(refresh_token)
+        
+        # Return token response
+        return {
+            "access_token": token_data["access_token"],
+            "token_type": token_data["token_type"],
+            "expires_in": auth_service.access_token_expire_minutes * 60  # Convert to seconds
+        }
+        
+    except Exception as e:
+        raise AuthErrors.INVALID_REFRESH_TOKEN

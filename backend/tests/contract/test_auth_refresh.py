@@ -141,13 +141,8 @@ class TestAuthRefreshContract:
     async def test_refresh_secure_cookie_handling_contract(self):
         """Test that refresh endpoint properly handles secure cookies."""
         async with AsyncClient(base_url="http://localhost:8000") as client:
-            # Test with valid refresh token
-            client.cookies.set(
-                "refresh_token", 
-                "valid-refresh-token",
-                secure=True,
-                httponly=True
-            )
+            # Test with valid refresh token (httpx doesn't support secure/httponly flags)
+            client.cookies.set("refresh_token", "valid-refresh-token")
             
             response = await client.post("/api/v1/auth/refresh")
             
